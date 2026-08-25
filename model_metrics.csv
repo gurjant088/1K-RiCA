@@ -1,0 +1,7 @@
+Model,Task,Metric,Score,RMSE_AUC,CV_Mean,CV_Std,n_estimators,Key_Params
+XGBoost,FLW Prediction,R²,0.6905,2.5195 days,0.692,0.021,500,max_depth=4;lr=0.01;reg_alpha=0.01;subsample=0.9;colsample_bytree=0.5
+RandomForest,PH Prediction,R²,0.5486,5.9356 cm,0.544,0.018,600,max_features=0.4;SelectKBest_k=200;FLW_covariate=True
+RandomForest,Subgroup Classification,Accuracy,0.7667,AUC=0.8174,0.731,0.028,300,max_depth=10;stratified_split
+Ridge,FLW Prediction,R²,0.5716,2.8834 days,0.561,0.024,—,alpha=auto_cv
+LightGBM,PH Prediction,R²,0.4844,6.3201 cm,0.476,0.022,400,lr=0.05;num_leaves=31
+SVR,FLW Prediction,R²,0.4201,3.4512 days,0.411,0.031,—,kernel=rbf;C=1.0
