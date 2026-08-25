@@ -1,0 +1,21 @@
+Model,Trait,Rank,Feature,SHAP_Importance,Description
+XGBoost,FLW,1,Feature_612,1.000,Strongest — epistatic with Feature_613
+XGBoost,FLW,2,Feature_611,0.920,Second strongest marker
+XGBoost,FLW,3,Feature_375,0.850,Negative SHAP — earlier flowering
+XGBoost,FLW,4,Feature_613,0.780,Epistatic pair with Feature_612
+XGBoost,FLW,5,Feature_673,0.710,Moderate contributor
+XGBoost,FLW,6,Feature_607,0.650,SNP interaction effect
+XGBoost,FLW,7,Feature_571,0.580,Minor contributor
+XGBoost,FLW,8,Feature_802,0.520,Background effect
+XGBoost,FLW,9,Feature_192,0.460,Low importance
+XGBoost,FLW,10,Feature_198,0.410,Low importance
+RandomForest,PH,1,Feature_199,1.000,Dominant — SHAP range ±6cm
+RandomForest,PH,2,Feature_138,0.880,Strong positive effect
+RandomForest,PH,3,Feature_193,0.810,Secondary contributor
+RandomForest,PH,4,Feature_137,0.740,Related to Feature_138
+RandomForest,PH,5,Feature_134,0.680,Moderate influence
+RandomForest,PH,6,Feature_192,0.610,Minor contributor
+RandomForest,PH,7,Feature_179,0.550,Low importance
+RandomForest,PH,8,Feature_151,0.480,Background effect
+RandomForest,PH,9,Feature_21,0.420,Low importance
+RandomForest,PH,10,Feature_34,0.370,Low importance
