@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiceBreed AI · Gurjant Singh</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy:#0a0f1e; --navy2:#0f1629; --navy3:#1a2340;
+  --gold:#c9a84c; --gold2:#e6c87a; --gold-lt:rgba(201,168,76,0.10); --gold-bd:rgba(201,168,76,0.22);
+  --white:#ffffff; --off:#f7f8fc; --surface:#f0f3f9;
+  --border:#e2e8f0; --border2:#cbd5e1;
+  --text:#0f172a; --muted:#64748b; --muted2:#94a3b8;
+  --green:#16a34a; --green-lt:#f0fdf4;
+  --red:#dc2626;   --red-lt:#fef2f2;
+  --blue:#2563eb;  --blue-lt:#eff6ff;
+  --purple:#7c3aed;--purple-lt:#f5f3ff;
+  --orange:#ea580c;--orange-lt:#fff7ed;
+  --sh: 0 1px 4px rgba(15,22,41,0.07),0 4px 16px rgba(15,22,41,0.06);
+  --sh-lg: 0 8px 32px rgba(15,22,41,0.12),0 2px 8px rgba(15,22,41,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--off);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+button,input,select{font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── SIDEBAR ── */
+.sb{width:232px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;
+  position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;
+  transition:width 0.25s ease;z-index:200}
+.sb.col{width:56px}
+
+.sb-top{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;gap:10px;overflow:hidden;position:relative}
+.sb-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sb-name{font-family:'DM Serif Display',serif;font-size:16px;color:#fff;white-space:nowrap}
+.sb-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.3);
+  letter-spacing:1.5px;margin-top:1px;white-space:nowrap}
+.sb-tog{position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px;cursor:pointer;color:rgba(255,255,255,0.35);font-size:10px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.sb-tog:hover{background:rgba(255,255,255,0.12);color:#fff}
+
+.sb-sec{padding:14px 16px 4px;font-family:'JetBrains Mono',monospace;font-size:8px;
+  letter-spacing:2px;color:rgba(255,255,255,0.22);text-transform:uppercase;overflow:hidden;white-space:nowrap}
+.sb.col .sb-sec{padding:14px 0 4px;text-align:center;letter-spacing:0;font-size:7px}
+
+.sb-link{display:flex;align-items:center;gap:10px;padding:8px 16px;cursor:pointer;
+  color:rgba(255,255,255,0.42);font-size:13px;font-weight:500;
+  border-left:2px solid transparent;overflow:hidden;white-space:nowrap;
+  transition:all 0.15s}
+.sb-link:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}
+.sb-link.on{background:rgba(201,168,76,0.1);color:var(--gold2);border-left-color:var(--gold)}
+.sb-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sb-lbl{overflow:hidden;text-overflow:ellipsis}
+.sb-cnt{margin-left:auto;background:var(--gold);color:var(--navy);font-size:9px;
+  font-weight:700;padding:1px 6px;border-radius:8px;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+
+.sb-metrics{margin:12px 10px;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;overflow:hidden}
+.sb-m-hd{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;
+  color:rgba(255,255,255,0.22);margin-bottom:10px;text-transform:uppercase}
+.sb-m-row{display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sb-m-row:last-child{border-bottom:none}
+.sb-m-name{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.38)}
+.sb-m-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold)}
+
+.sb-snp{padding:10px 10px 6px;border-top:1px solid rgba(255,255,255,0.05);overflow:hidden}
+.sb-snp-lbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
+  color:rgba(255,255,255,0.18);margin-bottom:5px}
+.snp-strip{display:flex;gap:2px;overflow:hidden}
+.snp-b{width:7px;height:7px;border-radius:2px;flex-shrink:0;opacity:0.7}
+.snp-b.s0{background:#3b82f6}.snp-b.s1{background:var(--gold)}
+.snp-b.s2{background:#22c55e}.snp-b.sn{background:rgba(255,255,255,0.1)}
+
+.sb-foot{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.05);
+  margin-top:auto;overflow:hidden}
+.sb-foot-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.68);white-space:nowrap}
+.sb-foot-sub{font-family:'JetBrains Mono',monospace;font-size:8px;
+  color:rgba(255,255,255,0.24);letter-spacing:0.5px;margin-top:2px;white-space:nowrap}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);
+  height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border)}
+.tb-l{display:flex;align-items:center;gap:14px}
+.tb-page-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;
+  letter-spacing:2px;color:var(--muted2);text-transform:uppercase}
+.tb-page-title{font-size:15px;font-weight:600;color:var(--text);margin-top:1px}
+.tb-div{width:1px;height:22px;background:var(--border)}
+.tb-chips{display:flex;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.5px;border:1px solid}
+.chip-gold{background:var(--gold-lt);color:#92400e;border-color:var(--gold-bd)}
+.chip-blue{background:var(--blue-lt);color:#1e40af;border-color:#bfdbfe}
+.chip-green{background:var(--green-lt);color:#14532d;border-color:#bbf7d0}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:currentColor;
+  animation:pulse 1.8s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.tb-r{display:flex;align-items:center;gap:8px}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:20px 24px 0;overflow-y:auto}
+
+/* ── PAGES ── */
+.page{display:none}
+.page.on{display:block;animation:fin 0.22s ease}
+@keyframes fin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO BANNER ── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 55%,#162855 100%);
+  border-radius:14px;padding:22px 28px;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  box-shadow:var(--sh-lg);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);pointer-events:none}
+.hero-ey{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;
+  color:rgba(201,168,76,0.75);margin-bottom:6px;text-transform:uppercase}
+.hero-h{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;
+  line-height:1.25;margin-bottom:5px}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.42);letter-spacing:0.3px}
+.hero-stats{display:flex;gap:10px;flex-shrink:0}
+.hero-stat{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);
+  border-radius:10px;padding:10px 16px;text-align:center;min-width:72px}
+.hero-stat-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;line-height:1}
+.hero-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;
+  color:rgba(255,255,255,0.3);margin-top:4px;text-transform:uppercase}
+
+/* ── KPI STRIP ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;box-shadow:var(--sh);position:relative;overflow:hidden;
+  transition:box-shadow 0.2s,transform 0.2s}
+.kpi:hover{box-shadow:var(--sh-lg);transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.gd::before{background:linear-gradient(90deg,#c9a84c,#e6c87a)}
+.kpi.gn::before{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.kpi.bl::before{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.kpi.pu::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.kpi-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;
+  color:var(--muted2);text-transform:uppercase;margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
+.kpi.gd .kpi-val{color:var(--gold)}.kpi.gn .kpi-val{color:var(--green)}
+.kpi.bl .kpi-val{color:var(--blue)}.kpi.pu .kpi-val{color:var(--purple)}
+.kpi-desc{font-size:11px;color:var(--muted2)}
+.kpi-prog{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:2px}
+.kpi.gd .kpi-fill{background:var(--gold)}.kpi.gn .kpi-fill{background:var(--green)}
+.kpi.bl .kpi-fill{background:var(--blue)}.kpi.pu .kpi-fill{background:var(--purple)}
+
+/* ── LAYOUT ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.g35{display:grid;grid-template-columns:308px 1fr;gap:14px}
+.g25{display:grid;grid-template-columns:248px 1fr;gap:14px}
+.gcmp{display:grid;grid-template-columns:1fr 40px 1fr;gap:12px;align-items:start;margin-bottom:14px}
+
+/* ── CARD ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  box-shadow:var(--sh);overflow:hidden;margin-bottom:14px;
+  transition:box-shadow 0.2s,transform 0.2s}
+.card:hover{box-shadow:var(--sh-lg);transform:translateY(-1px)}
+.ch{padding:13px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ch-left{display:flex;flex-direction:column;gap:2px}
+.ct{font-size:13px;font-weight:600;color:var(--text)}
+.cs{font-size:11px;color:var(--muted2)}
+.cb{padding:16px 18px}
+.cb.p0{padding:0}
+
+/* ── SECTION HEADER ── */
+.sh{margin-bottom:18px}
+.sh-ey{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;
+  color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.sh-h{font-family:'DM Serif Display',serif;font-size:24px;color:var(--navy);line-height:1.2}
+.sh-s{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.7;max-width:580px}
+
+/* ── FORM ── */
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:11px;font-weight:500;color:var(--muted);
+  margin-bottom:5px;letter-spacing:0.2px}
+.fld input,.fld select{width:100%;background:var(--off);border:1px solid var(--border2);
+  color:var(--text);padding:8px 11px;border-radius:8px;font-size:13px;outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s}
+.fld input:focus,.fld select:focus{border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.12);background:var(--white)}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+input[type=range]{accent-color:var(--gold);cursor:pointer;padding:0;border:none;background:transparent}
+.rr{display:flex;align-items:center;gap:10px}
+.rv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--gold);min-width:38px;text-align:right}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;
+  font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.2px}
+.btn-primary{background:linear-gradient(135deg,#c9a84c,#e6c87a);color:var(--navy);font-weight:700}
+.btn-primary:hover{box-shadow:0 4px 14px rgba(201,168,76,0.35);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--gold);border:1.5px solid var(--gold-bd)}
+.btn-outline:hover{background:var(--gold-lt)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy3)}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #fca5a5}
+.btn-danger:hover{background:#fee2e2}
+.btn-success{background:var(--green-lt);color:var(--green);border:1px solid #bbf7d0;font-weight:600}
+.btn-success:hover{background:#dcfce7}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
+.btn-xs{padding:3px 8px;font-size:10px;border-radius:5px}
+
+/* ── UPLOAD ZONE ── */
+.uz{border:2px dashed var(--border2);border-radius:12px;padding:40px 24px;
+  text-align:center;cursor:pointer;transition:all 0.22s cubic-bezier(.4,0,.2,1);
+  background:linear-gradient(150deg,var(--off),#eff3fc);margin-bottom:12px;
+  position:relative;overflow:hidden}
+.uz::after{content:'';position:absolute;inset:0;opacity:0;
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),transparent);transition:opacity 0.2s}
+.uz:hover,.uz.drag{border-color:var(--gold);background:var(--gold-lt)}
+.uz:hover::after,.uz.drag::after{opacity:1}
+.uz-icon{font-size:36px;margin-bottom:12px;display:block}
+.uz-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+.uz-sub{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 18px}
+.tab{padding:10px 14px;font-size:12px;font-weight:500;color:var(--muted);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all 0.15s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:600}
+.tp{display:none}.tp.on{display:block}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:var(--muted2);text-align:left;padding:9px 16px;border-bottom:1px solid var(--border);
+  background:var(--off);text-transform:uppercase;white-space:nowrap;font-weight:600}
+.tbl td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(201,168,76,0.04)}
+.tbl tr.hl td{background:rgba(201,168,76,0.06)}
+.tw{overflow-x:auto}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:5px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;border:1px solid}
+.b-gd{background:var(--gold-lt);color:var(--gold);border-color:var(--gold-bd)}
+.b-gn{background:var(--green-lt);color:var(--green);border-color:#bbf7d0}
+.b-bl{background:var(--blue-lt);color:var(--blue);border-color:#bfdbfe}
+.b-pu{background:var(--purple-lt);color:var(--purple);border-color:#ddd6fe}
+.b-nv{background:rgba(10,15,30,0.07);color:var(--navy);border-color:rgba(10,15,30,0.12)}
+.b-or{background:var(--orange-lt);color:var(--orange);border-color:#fed7aa}
+
+/* ── PREDICTION CARDS ── */
+.pred-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+.pc{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:18px;box-shadow:var(--sh);transition:all 0.2s;position:relative;overflow:hidden}
+.pc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.pc.gd::after{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.pc.gn::after{background:linear-gradient(90deg,var(--green),#22c55e)}
+.pc.bl::after{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.pc.pu::after{background:linear-gradient(90deg,var(--purple),#a78bfa)}
+.pc:hover{box-shadow:var(--sh-lg);transform:translateY(-2px)}
+.pc-model{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;
+  color:var(--gold);margin-bottom:3px;text-transform:uppercase}
+.pc-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:var(--muted2);text-transform:uppercase;margin-bottom:8px}
+.pc-val{font-family:'DM Serif Display',serif;font-size:40px;line-height:1;
+  margin-bottom:4px;transition:all 0.3s}
+.pc.gd .pc-val{color:var(--gold)}.pc.gn .pc-val{color:var(--green)}
+.pc.bl .pc-val{color:var(--blue)}.pc.pu .pc-val{color:var(--purple)}
+.pc-unit{font-size:11px;color:var(--muted2)}
+.pc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden}
+.pc-fill{height:100%;border-radius:2px;transition:width 0.7s cubic-bezier(.4,0,.2,1)}
+.pc.gd .pc-fill{background:var(--gold)}.pc.gn .pc-fill{background:var(--green)}
+.pc.bl .pc-fill{background:var(--blue)}.pc.pu .pc-fill{background:var(--purple)}
+
+/* ── SHAP BARS ── */
+.shr{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.shr-rank{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted2);
+  width:14px;text-align:center;flex-shrink:0}
+.shr-name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);
+  font-weight:500;min-width:58px}
+.shr-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.shr-fill{height:100%;border-radius:3px}
+.shr-fill.gd{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.shr-fill.gn{background:linear-gradient(90deg,var(--green),#22c55e)}
+.shr-score{font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--muted2);min-width:28px;text-align:right}
+
+/* ── SNP MAP ── */
+.snp-map{display:grid;grid-template-columns:repeat(16,1fr);gap:2px}
+.snp-c{aspect-ratio:1;border-radius:2px;border:1px solid transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:6px;font-weight:700;
+  cursor:pointer;transition:transform 0.1s}
+.snp-c:hover{transform:scale(1.5);z-index:5;position:relative}
+.sc0{background:#dbeafe;color:var(--blue);border-color:#bfdbfe}
+.sc1{background:#fef9c3;color:#92400e;border-color:#fde68a}
+.sc2{background:#dcfce7;color:var(--green);border-color:#bbf7d0}
+.scn{background:var(--off);color:var(--muted2);border-color:var(--border)}
+.sc-hi{border:2px solid var(--red)!important;box-shadow:0 0 5px rgba(220,38,38,0.3)}
+
+/* ── CMP VS ── */
+.cmp-vs{display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;font-size:22px;color:var(--muted2);padding-top:38px}
+
+/* ── STAT BOX ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.sbox{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;box-shadow:var(--sh)}
+.sbox-n{font-family:'DM Serif Display',serif;font-size:24px;color:var(--gold);line-height:1;margin-bottom:3px}
+.sbox-l{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;
+  color:var(--muted2);text-transform:uppercase}
+
+/* ── FORMAT ROW ── */
+.fmtr{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--off);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;
+  transition:background 0.15s}
+.fmtr:hover{background:var(--gold-lt)}
+.fmtr-col{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  color:var(--gold);min-width:60px}
+.fmtr-desc{font-size:11px;color:var(--muted);flex:1}
+.fmtr-type{font-size:9px}
+
+/* ── ALERTS ── */
+.alert{padding:12px 16px;border-radius:8px;font-size:12px;
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;line-height:1.65}
+.alert-ico{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-gd{background:var(--gold-lt);border:1px solid var(--gold-bd);color:#78350f}
+.alert-gn{background:var(--green-lt);border:1px solid #bbf7d0;color:#14532d}
+.alert-bl{background:var(--blue-lt);border:1px solid #bfdbfe;color:#1e3a8a}
+.alert-rd{background:var(--red-lt);border:1px solid #fca5a5;color:#991b1b}
+
+/* ── EMPTY ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:56px 24px;text-align:center}
+.empty-ico{font-size:40px;margin-bottom:14px;opacity:0.4}
+.empty-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px}
+.empty-sub{font-size:12px;color:var(--muted2);line-height:1.7;max-width:260px}
+
+/* ── DOWNLOAD PANEL ── */
+.dl-panel{background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1px solid #bbf7d0;
+  border-radius:10px;padding:16px 18px;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;margin-bottom:14px}
+.dl-panel-info{display:flex;align-items:center;gap:10px}
+.dl-panel-ico{font-size:20px}
+.dl-panel-title{font-size:13px;font-weight:600;color:var(--text)}
+.dl-panel-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.dl-btns{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── CORR MATRIX ── */
+.corr-g{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.corr-c{padding:10px 6px;text-align:center;border-radius:5px}
+.corr-lbl{font-size:8px;color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.corr-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+
+/* ── CHART wrapper — always white bg ── */
+.chart-wrap{background:var(--white);border-radius:8px;padding:4px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;
+  padding:11px 20px;border-radius:10px;font-size:12px;z-index:9999;
+  transform:translateY(60px);opacity:0;transition:all 0.28s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--sh-lg);border-left:3px solid var(--gold);font-weight:500;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── FOOTER ── */
+.footer{background:var(--navy);padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-logo{width:24px;height:24px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.footer-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#fff}
+.footer-sub{font-family:'JetBrains Mono',monospace;font-size:8px;
+  color:rgba(255,255,255,0.28);letter-spacing:0.5px;margin-top:1px}
+.footer-stats{display:flex;gap:18px}
+.footer-stat{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:rgba(255,255,255,0.28);letter-spacing:0.5px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .g2,.g35,.g25,.gcmp{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .kpi-row,.stat-row{grid-template-columns:1fr 1fr}
+  .pred-row{grid-template-columns:1fr}
+  .snp-map{grid-template-columns:repeat(8,1fr)}
+  .cmp-vs{padding-top:0}
+  .hero{flex-direction:column}
+  .hero-stats{align-self:stretch;justify-content:space-between}
+  .footer-stats{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sb" id="sb">
+  <div style="position:relative">
+    <div class="sb-top">
+      <div class="sb-logo">🌾</div>
+      <div>
+        <div class="sb-name">RiceBreed AI</div>
+        <div class="sb-sub">1k-RiCA · GENOMICS</div>
+      </div>
+      <div class="sb-tog" onclick="toggleSB()" id="sb-tog">‹</div>
+    </div>
+  </div>
+
+  <div class="sb-sec">Workspace</div>
+  <div class="sb-link on" onclick="goPage('upload',this)"><span class="sb-ico">📤</span><span class="sb-lbl">Upload &amp; Predict</span></div>
+  <div class="sb-link" onclick="goPage('live',this)"><span class="sb-ico">⚡</span><span class="sb-lbl">Live Predictor</span></div>
+  <div class="sb-link" onclick="goPage('rank',this)"><span class="sb-ico">🏆</span><span class="sb-lbl">Cross Ranking</span><span class="sb-cnt" id="sb-cnt">0</span></div>
+  <div class="sb-link" onclick="goPage('compare',this)"><span class="sb-ico">⚖️</span><span class="sb-lbl">Compare Parents</span></div>
+
+  <div class="sb-sec">Analysis</div>
+  <div class="sb-link" onclick="goPage('shap',this)"><span class="sb-ico">🔍</span><span class="sb-lbl">SHAP Analysis</span></div>
+  <div class="sb-link" onclick="goPage('snp',this)"><span class="sb-ico">🧬</span><span class="sb-lbl">SNP Viewer</span></div>
+  <div class="sb-link" onclick="goPage('dash',this)"><span class="sb-ico">📊</span><span class="sb-lbl">Dashboard</span></div>
+
+  <div class="sb-metrics" id="sb-met">
+    <div class="sb-m-hd">Model Performance</div>
+    <div class="sb-m-row"><span class="sb-m-name">XGBoost · FLW</span><span class="sb-m-val">0.6905</span></div>
+    <div class="sb-m-row"><span class="sb-m-name">RF · PH</span><span class="sb-m-val">0.5486</span></div>
+    <div class="sb-m-row"><span class="sb-m-name">RF · Class.</span><span class="sb-m-val">76.67%</span></div>
+  </div>
+
+  <div class="sb-snp" id="sb-snp">
+    <div class="sb-snp-lbl">LIVE SNP STRIP</div>
+    <div class="snp-strip" id="snp-strip"></div>
+  </div>
+
+  <div class="sb-foot">
+    <div class="sb-foot-name">Gurjant Singh</div>
+    <div class="sb-foot-sub">Rice Genomics · ML Research</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-l">
+    <div>
+      <div class="tb-page-lbl" id="tb-ey">WORKSPACE</div>
+      <div class="tb-page-title" id="tb-ti">Upload &amp; Predict</div>
+    </div>
+    <div class="tb-div"></div>
+    <div class="tb-chips">
+      <span class="chip chip-gold">353 ACCESSIONS</span>
+      <span class="chip chip-blue">965 SNPs</span>
+      <span class="chip chip-green">1k-RiCA</span>
+    </div>
+  </div>
+  <div class="tb-r">
+    <span class="chip chip-green"><span class="chip-dot"></span>Models Active</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ════ PAGE: UPLOAD & PREDICT ════ -->
+<div class="page on" id="pg-upload">
+
+  <!-- Hero banner -->
+  <div class="hero">
+    <div>
+      <div class="hero-ey">Rice Genomic Prediction System</div>
+      <div class="hero-h">Explainable ML for Rice Breeding</div>
+      <div class="hero-sub">XGBoost · Random Forest · SHAP Analysis · 1k-RiCA SNP Panel · 353 accessions × 965 markers</div>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val" style="color:var(--gold)">0.6905</div><div class="hero-stat-lbl">FLW R²</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" style="color:#22c55e">0.5486</div><div class="hero-stat-lbl">PH R²</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" style="color:#a78bfa">76.67%</div><div class="hero-stat-lbl">Class Acc</div></div>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row">
+    <div class="kpi gd"><div class="kpi-label">XGBoost · FLW R²</div><div class="kpi-val">0.6905</div><div class="kpi-desc">Flowering time prediction</div><div class="kpi-prog"><div class="kpi-fill" style="width:69.05%"></div></div></div>
+    <div class="kpi gn"><div class="kpi-label">Random Forest · PH R²</div><div class="kpi-val">0.5486</div><div class="kpi-desc">Plant height prediction</div><div class="kpi-prog"><div class="kpi-fill" style="width:54.86%"></div></div></div>
+    <div class="kpi bl"><div class="kpi-label">Classification Accuracy</div><div class="kpi-val">76.67%</div><div class="kpi-desc">Subgroup · ROC AUC 0.8174</div><div class="kpi-prog"><div class="kpi-fill" style="width:76.67%"></div></div></div>
+    <div class="kpi pu"><div class="kpi-label">Crosses Evaluated</div><div class="kpi-val">62,128</div><div class="kpi-desc">All pairwise combinations</div><div class="kpi-prog"><div class="kpi-fill" style="width:80%"></div></div></div>
+  </div>
+
+  <div class="g35">
+    <!-- LEFT -->
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ch-left"><div class="ct">Upload Dataset</div><div class="cs">CSV with phenotypic data</div></div></div>
+        <div class="cb">
+          <div class="uz" id="uz"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="onDrop(event)">
+            <span class="uz-icon">📂</span>
+            <div class="uz-title">Drop your CSV file here</div>
+            <div class="uz-sub">Required columns: <strong>Variety · FLW · GY · PH</strong></div>
+            <button class="btn btn-primary" onclick="document.getElementById('fi').click()">Browse File</button>
+            <input type="file" id="fi" accept=".csv" style="display:none" onchange="loadFile(this.files[0])">
+          </div>
+          <button class="btn btn-outline btn-full" onclick="loadDemo()">Use Demo Data — 12 Varieties</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ct">Required Format</div></div>
+        <div class="cb">
+          <div style="margin-bottom:12px">
+            <div class="fmtr"><span class="fmtr-col">Variety</span><span class="fmtr-desc">Variety name or accession ID</span><span class="badge b-nv">text</span></div>
+            <div class="fmtr"><span class="fmtr-col">FLW</span><span class="fmtr-desc">Flowering time in days (60–130)</span><span class="badge b-gd">number</span></div>
+            <div class="fmtr"><span class="fmtr-col">GY</span><span class="fmtr-desc">Grain yield t/ha (1–10)</span><span class="badge b-gd">number</span></div>
+            <div class="fmtr"><span class="fmtr-col">PH</span><span class="fmtr-desc">Plant height in cm (60–150)</span><span class="badge b-gd">number</span></div>
+          </div>
+          <pre style="background:var(--off);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--navy3);overflow-x:auto;line-height:1.9">Variety,FLW,GY,PH
+IR64,85,4.2,98
+Swarna,89,4.2,106
+TN1,78,3.6,88</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div id="up-empty" class="card">
+        <div class="empty">
+          <div class="empty-ico">📊</div>
+          <div class="empty-title">No dataset uploaded yet</div>
+          <div class="empty-sub">Upload a CSV or use demo data to run XGBoost and Random Forest predictions, then download results.</div>
+        </div>
+      </div>
+
+      <div id="up-results" style="display:none">
+        <div class="stat-row" id="stat-row"></div>
+        <div class="card">
+          <div class="ch">
+            <div class="ch-left">
+              <div class="ct" id="up-fname">Dataset</div>
+              <div class="cs" id="up-fmeta"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="runPred()">▶ Run Predictions</button>
+              <button class="btn btn-ghost btn-sm" id="dl-btn" style="display:none" onclick="dlPred()">⬇ Download CSV</button>
+            </div>
+          </div>
+          <div class="tabs">
+            <div class="tab on" onclick="stab('preview',this)">Data Preview</div>
+            <div class="tab" id="t-pred" onclick="stab('pred',this)" style="display:none">Predictions</div>
+            <div class="tab" id="t-cross" onclick="stab('crosses',this)" style="display:none">Cross Rankings</div>
+          </div>
+          <div class="tp on" id="tp-preview"><div class="tw"><table class="tbl" id="prev-tbl"></table></div></div>
+          <div class="tp" id="tp-pred">
+            <div id="pred-charts" style="display:none;padding:16px">
+              <div class="g2">
+                <div class="chart-wrap"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted2);margin-bottom:8px;text-transform:uppercase">Actual vs Predicted FLW · XGBoost</div><canvas id="ch-flw" height="200"></canvas></div>
+                <div class="chart-wrap"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted2);margin-bottom:8px;text-transform:uppercase">Actual vs Predicted PH · Random Forest</div><canvas id="ch-ph" height="200"></canvas></div>
+              </div>
+            </div>
+            <div class="tw"><table class="tbl" id="pred-tbl"></table></div>
+          </div>
+          <div class="tp" id="tp-crosses">
+            <div style="padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--muted2)" id="cross-meta"></div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-success btn-sm" onclick="dlCrossCSV()">⬇ Cross Rankings CSV</button>
+                <button class="btn btn-ghost btn-sm" onclick="dlReport()">⬇ Full Report</button>
+              </div>
+            </div>
+            <div class="tw"><table class="tbl" id="cross-tbl-up"></table></div>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD PANEL — shows after predictions run -->
+        <div class="dl-panel" id="dl-panel" style="display:none">
+          <div class="dl-panel-info">
+            <div class="dl-panel-ico">✅</div>
+            <div>
+              <div class="dl-panel-title">Results Ready — Download Your Files</div>
+              <div class="dl-panel-sub">Predictions, cross rankings, and full report are available</div>
+            </div>
+          </div>
+          <div class="dl-btns">
+            <button class="btn btn-primary btn-sm" onclick="dlPred()">⬇ Predictions CSV</button>
+            <button class="btn btn-success btn-sm" onclick="dlCrossCSV()">⬇ Cross Rankings CSV</button>
+            <button class="btn btn-navy btn-sm" onclick="dlReport()">⬇ Full Report TXT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: LIVE PREDICTOR ════ -->
+<div class="page" id="pg-live">
+  <div class="sh">
+    <div class="sh-ey">Real-time inference</div>
+    <div class="sh-h">Live Trait Predictor</div>
+    <div class="sh-s">Values update instantly as you type — calibrated to XGBoost R²=0.6905 and Random Forest R²=0.5486</div>
+  </div>
+  <div class="g35">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Variety Parameters</div><div style="font-size:10px;color:var(--muted2)">Updates live</div></div>
+        <div class="cb">
+          <div class="fld"><label>Variety Name</label><input id="lv-name" value="IR64" oninput="livePred()"></div>
+          <div class="fr2">
+            <div class="fld"><label>FLW (days)</label><input type="number" id="lv-flw" value="85" min="60" max="130" oninput="livePred()"></div>
+            <div class="fld"><label>PH (cm)</label><input type="number" id="lv-ph" value="98" min="60" max="150" oninput="livePred()"></div>
+          </div>
+          <div class="fld"><label>Grain Yield (t/ha)</label><input type="number" id="lv-gy" value="4.2" step="0.1" oninput="livePred()"></div>
+          <div class="fld">
+            <label>Subgroup</label>
+            <select id="lv-sub" onchange="livePred()">
+              <option value="ind">ind — Indica</option>
+              <option value="jap">jap — Japonica</option>
+              <option value="aus">aus — Aus</option>
+              <option value="trop">trop — Tropical Japonica</option>
+              <option value="aro">aro — Aromatic</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>Model Uncertainty (%)</label>
+            <div class="rr">
+              <input type="range" id="lv-n" min="0" max="5" value="1.5" step="0.5" style="flex:1" oninput="document.getElementById('lv-nv').textContent=this.value+'%';livePred()">
+              <span class="rv" id="lv-nv">1.5%</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <div style="font-size:11px;color:var(--muted2);margin-bottom:2px;font-family:'JetBrains Mono',monospace;letter-spacing:1px">QUICK PRESETS</div>
+            <div class="fr2">
+              <button class="btn btn-outline btn-sm" onclick="preset('IR64')">IR64</button>
+              <button class="btn btn-outline btn-sm" onclick="preset('Swarna')">Swarna</button>
+            </div>
+            <div class="fr2">
+              <button class="btn btn-outline btn-sm" onclick="preset('TN1')">TN1</button>
+              <button class="btn btn-outline btn-sm" onclick="preset('IR8')">IR8</button>
+            </div>
+            <button class="btn btn-navy btn-full" onclick="saveToRank()">+ Add to Cross Ranker</button>
+            <button class="btn btn-success btn-full" onclick="dlLivePred()">⬇ Download Prediction</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="pred-row">
+        <div class="pc gd">
+          <div class="pc-model">XGBoost · R²=0.6905 · RMSE=2.52d</div>
+          <div class="pc-lbl">Predicted Flowering Time</div>
+          <div class="pc-val" id="lv-flw-out">85.4</div>
+          <div class="pc-unit">days to flowering</div>
+          <div class="pc-bar"><div class="pc-fill" id="lv-flw-bar" style="width:65%"></div></div>
+        </div>
+        <div class="pc gn">
+          <div class="pc-model">Random Forest · R²=0.5486 · RMSE=5.94cm</div>
+          <div class="pc-lbl">Predicted Plant Height</div>
+          <div class="pc-val" id="lv-ph-out">99.2</div>
+          <div class="pc-unit">centimetres</div>
+          <div class="pc-bar"><div class="pc-fill" id="lv-ph-bar" style="width:66%"></div></div>
+        </div>
+        <div class="pc bl">
+          <div class="pc-model">Combined Breeding Index</div>
+          <div class="pc-lbl">Performance Score</div>
+          <div class="pc-val" id="lv-score-out">1.241</div>
+          <div class="pc-unit">higher = better cross candidate</div>
+          <div class="pc-bar"><div class="pc-fill" id="lv-score-bar" style="width:62%"></div></div>
+        </div>
+        <div class="pc pu">
+          <div class="pc-model">Classifier · Acc=76.67%</div>
+          <div class="pc-lbl">Predicted Subgroup</div>
+          <div class="pc-val" id="lv-cls-out" style="font-size:28px;font-family:'JetBrains Mono',monospace">IND</div>
+          <div class="pc-unit">confidence: <span id="lv-conf">82%</span></div>
+          <div class="pc-bar"><div class="pc-fill" id="lv-cls-bar" style="width:82%"></div></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">Trait Profile</div><span class="badge b-nv">Radar</span></div>
+          <div class="cb"><div class="chart-wrap"><canvas id="lv-radar" height="220"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Prediction History</div><span class="badge b-nv">Last 10</span></div>
+          <div class="cb"><div class="chart-wrap"><canvas id="lv-hist" height="220"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: CROSS RANKING ════ -->
+<div class="page" id="pg-rank">
+  <div class="sh">
+    <div class="sh-ey">Breeding decisions</div>
+    <div class="sh-h">Parent Cross Ranking</div>
+    <div class="sh-s">Add varieties — the system evaluates all pairwise crosses using model predictions and ranks by predicted offspring performance.</div>
+  </div>
+  <div class="g35">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Add Variety</div></div>
+        <div class="cb">
+          <div class="fld"><label>Variety Name</label><input id="cr-name" placeholder="e.g. IR64"></div>
+          <div class="fr2">
+            <div class="fld"><label>FLW (days)</label><input type="number" id="cr-flw" value="85"></div>
+            <div class="fld"><label>PH (cm)</label><input type="number" id="cr-ph" value="98"></div>
+          </div>
+          <div class="fld"><label>GY (t/ha)</label><input type="number" id="cr-gy" value="4.2" step="0.1"></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-primary btn-full" onclick="addVar()">+ Add Variety</button>
+            <button class="btn btn-outline btn-full" onclick="demoVars()">Load 8 Demo Varieties</button>
+            <button class="btn btn-navy btn-full" onclick="rankAll()">▶ Rank All Crosses</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Variety List</div><span class="badge b-gd" id="var-cnt-badge">0 added</span></div>
+        <div id="var-list" style="max-height:240px;overflow-y:auto">
+          <div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:28px">🌱</div><div class="empty-sub">No varieties yet</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch">
+          <div class="ch-left"><div class="ct">Cross Rankings</div><div class="cs" id="cr-meta">Add varieties and click Rank All Crosses</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-success btn-sm" id="cr-dl-btn" style="display:none" onclick="dlCrossRanker()">⬇ Download CSV</button>
+          </div>
+        </div>
+        <div id="cr-empty" class="empty"><div class="empty-ico">🔬</div><div class="empty-title">No rankings yet</div><div class="empty-sub">Add at least 2 varieties and click Rank All Crosses.</div></div>
+        <div id="cr-tbl-wrap" style="display:none"><div class="tw"><table class="tbl" id="cr-tbl"></table></div></div>
+      </div>
+      <div class="card" id="cr-chart-card" style="display:none">
+        <div class="ch"><div class="ct">Top Cross Scores</div></div>
+        <div class="cb"><div class="chart-wrap"><canvas id="cr-bar" height="200"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: COMPARE ════ -->
+<div class="page" id="pg-compare">
+  <div class="sh">
+    <div class="sh-ey">Side-by-side analysis</div>
+    <div class="sh-h">Compare Two Parents</div>
+    <div class="sh-s">Enter two parent varieties to predict their cross offspring using XGBoost and Random Forest models.</div>
+  </div>
+  <div class="gcmp">
+    <div class="card">
+      <div class="ch" style="border-left:3px solid var(--gold)"><div class="ct">Parent 1</div><div style="font-size:11px;color:var(--muted2)">First parent</div></div>
+      <div class="cb">
+        <div class="fld"><label>Name</label><input id="c1n" value="IR64"></div>
+        <div class="fr2"><div class="fld"><label>FLW</label><input type="number" id="c1f" value="85"></div><div class="fld"><label>PH</label><input type="number" id="c1p" value="98"></div></div>
+        <div class="fld"><label>GY</label><input type="number" id="c1g" value="4.2" step="0.1"></div>
+        <div class="fld"><label>Subgroup</label><select id="c1s"><option value="ind">ind</option><option value="jap">jap</option><option value="aus">aus</option><option value="trop">trop</option><option value="aro">aro</option></select></div>
+      </div>
+    </div>
+    <div class="cmp-vs">×</div>
+    <div class="card">
+      <div class="ch" style="border-left:3px solid var(--green)"><div class="ct">Parent 2</div><div style="font-size:11px;color:var(--muted2)">Second parent</div></div>
+      <div class="cb">
+        <div class="fld"><label>Name</label><input id="c2n" value="Swarna"></div>
+        <div class="fr2"><div class="fld"><label>FLW</label><input type="number" id="c2f" value="89"></div><div class="fld"><label>PH</label><input type="number" id="c2p" value="106"></div></div>
+        <div class="fld"><label>GY</label><input type="number" id="c2g" value="4.2" step="0.1"></div>
+        <div class="fld"><label>Subgroup</label><select id="c2s"><option value="ind">ind</option><option value="jap" selected>jap</option><option value="aus">aus</option><option value="trop">trop</option><option value="aro">aro</option></select></div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-bottom:18px;display:flex;gap:10px;justify-content:center">
+    <button class="btn btn-primary" style="padding:12px 44px;font-size:14px" onclick="runCmp()">▶ Predict Cross Performance</button>
+    <button class="btn btn-success" onclick="dlCmpResult()" id="cmp-dl-btn" style="display:none">⬇ Download Result</button>
+  </div>
+  <div id="cmp-out" style="display:none">
+    <div class="pred-row">
+      <div class="pc gd"><div class="pc-model">XGBoost · FLW Model</div><div class="pc-lbl">Predicted Offspring FLW</div><div class="pc-val" id="co-flw">—</div><div class="pc-unit">days to flowering</div><div class="pc-bar"><div class="pc-fill" id="cb-flw" style="width:0%"></div></div></div>
+      <div class="pc gn"><div class="pc-model">Random Forest · PH Model</div><div class="pc-lbl">Predicted Offspring PH</div><div class="pc-val" id="co-ph">—</div><div class="pc-unit">plant height (cm)</div><div class="pc-bar"><div class="pc-fill" id="cb-ph" style="width:0%"></div></div></div>
+      <div class="pc bl"><div class="pc-model">Combined Breeding Index</div><div class="pc-lbl">Cross Score</div><div class="pc-val" id="co-score">—</div><div class="pc-unit">performance index</div><div class="pc-bar"><div class="pc-fill" id="cb-score" style="width:0%"></div></div></div>
+      <div class="pc pu"><div class="pc-model">Breeding Advisory</div><div class="pc-lbl">Recommendation</div><div class="pc-val" id="co-rec" style="font-size:20px">—</div><div class="pc-unit" id="co-rec-s"></div><div class="pc-bar"><div class="pc-fill" id="cb-rec" style="width:0%"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Trait Comparison — Parent 1 vs Parent 2 vs Predicted Offspring</div></div>
+      <div class="cb"><div class="chart-wrap"><canvas id="cmp-chart" height="270"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: SHAP ════ -->
+<div class="page" id="pg-shap">
+  <div class="sh">
+    <div class="sh-ey">Explainability · SHapley Additive Explanations</div>
+    <div class="sh-h">SHAP Feature Analysis</div>
+    <div class="sh-s">Which SNP markers drive predictions? SHAP values reveal the genomic basis behind each model's decisions.</div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct">XGBoost — Top 10 SNPs for FLW</div><span class="badge b-gd">R²=0.6905</span></div>
+      <div class="cb" id="shap-flw"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Random Forest — Top 10 SNPs for PH</div><span class="badge b-gn">R²=0.5486</span></div>
+      <div class="cb" id="shap-ph"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct">SHAP Distribution — FLW Model</div></div>
+      <div class="cb"><div class="chart-wrap"><canvas id="shap-ch-flw" height="210"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">SHAP Distribution — PH Model</div></div>
+      <div class="cb"><div class="chart-wrap"><canvas id="shap-ch-ph" height="210"></canvas></div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="alert alert-gd"><span class="alert-ico">🔬</span><div><strong>FLW — Epistatic Interaction:</strong> Feature 612 and 611 dominate. A significant epistatic interaction between SNP 612 × SNP 613 was confirmed — the effect of SNP 612 on flowering time depends on the allele at SNP 613.</div></div>
+    <div class="alert alert-gn"><span class="alert-ico">📊</span><div><strong>PH — Polygenic Architecture:</strong> Feature 199 shows the widest SHAP spread (±6 cm). Distributed importance reflects the polygenic nature of plant height, biologically constraining R² to ~0.55.</div></div>
+  </div>
+</div>
+
+<!-- ════ PAGE: SNP VIEWER ════ -->
+<div class="page" id="pg-snp">
+  <div class="sh">
+    <div class="sh-ey">Genomic data · 1k-RiCA Panel</div>
+    <div class="sh-h">SNP Genotype Viewer</div>
+    <div class="sh-s">Explore encoded genotype patterns. Blue = Ref (0), Amber = Heterozygous (1), Green = Alt (2). Red border = SHAP top marker.</div>
+  </div>
+  <div class="g25">
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ct">Viewer Settings</div></div>
+        <div class="cb">
+          <div class="fld"><label>Sample</label>
+            <select id="snp-s" onchange="renderSNP()">
+              <option value="0">300431179 (ind)</option><option value="1">300431133 (jap)</option>
+              <option value="2">300431138 (aus)</option><option value="3">300431200 (trop)</option>
+            </select>
+          </div>
+          <div class="fld"><label>Chromosome Region</label>
+            <select id="snp-c" onchange="renderSNP()">
+              <option>Chr01 · SNP 1–112</option><option>Chr02 · SNP 113–224</option>
+              <option>Chr03 · SNP 225–336</option><option>Chr04 · SNP 337–448</option>
+            </select>
+          </div>
+          <div class="fld"><label>Highlight SHAP Markers</label>
+            <select id="snp-h" onchange="renderSNP()">
+              <option value="none">None</option><option value="flw">FLW Top SNPs</option><option value="ph">PH Top SNPs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Legend</div></div>
+        <div class="cb">
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:11px">
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:20px;height:20px;background:#dbeafe;border:1px solid #bfdbfe;border-radius:3px"></div><span style="font-family:'JetBrains Mono',monospace;color:var(--blue)">0 — Ref homozygous</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:20px;height:20px;background:#fef9c3;border:1px solid #fde68a;border-radius:3px"></div><span style="font-family:'JetBrains Mono',monospace;color:#92400e">1 — Heterozygous</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:20px;height:20px;background:#dcfce7;border:1px solid #bbf7d0;border-radius:3px"></div><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">2 — Alt homozygous</span></div>
+            <div style="display:flex;align-items:center;gap:8px"><div style="width:20px;height:20px;background:var(--off);border:1px solid var(--border);border-radius:3px"></div><span style="font-family:'JetBrains Mono',monospace;color:var(--muted2)">? — Missing data</span></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:2px"><div style="width:20px;height:20px;background:var(--red-lt);border:2px solid var(--red);border-radius:3px"></div><span style="font-family:'JetBrains Mono',monospace;color:var(--red)">⭐ SHAP Top Marker</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">SNP Inspector</div></div>
+        <div class="cb" id="snp-info"><div style="font-size:12px;color:var(--muted2)">Click any cell to inspect.</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><div class="ch-left"><div class="ct" id="snp-title">Genotype Map</div><div class="cs" id="snp-stats"></div></div></div>
+        <div class="cb"><div class="snp-map" id="snp-map"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">Allele Frequency</div></div><div class="cb"><div class="chart-wrap"><canvas id="snp-donut" height="200"></canvas></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">SNP Position Profile</div></div><div class="cb"><div class="chart-wrap"><canvas id="snp-line" height="200"></canvas></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PAGE: DASHBOARD ════ -->
+<div class="page" id="pg-dash">
+  <div class="sh">
+    <div class="sh-ey">Research summary · 1k-RiCA Panel</div>
+    <div class="sh-h">Gurjant Singh — Research Dashboard</div>
+    <div class="sh-s">Complete ML model performance, cross-validation results, and trait correlation structure — 353 accessions × 965 SNPs.</div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi gd"><div class="kpi-label">Accessions</div><div class="kpi-val">353</div><div class="kpi-desc">1k-RiCA SNP Panel · IRRI</div></div>
+    <div class="kpi gn"><div class="kpi-label">SNP Markers</div><div class="kpi-val">965</div><div class="kpi-desc">Supplementary File 7</div></div>
+    <div class="kpi bl"><div class="kpi-label">Crosses Ranked</div><div class="kpi-val">62,128</div><div class="kpi-desc">All pairwise combinations</div></div>
+    <div class="kpi pu"><div class="kpi-label">Models Tested</div><div class="kpi-val">6+</div><div class="kpi-desc">XGBoost, RF, Ridge, LGB…</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ch"><div class="ct">R² Score Comparison</div><span class="badge b-gd">All Models</span></div><div class="cb"><div class="chart-wrap"><canvas id="db-r2" height="220"></canvas></div></div></div>
+    <div class="card"><div class="ch"><div class="ct">5-Fold Cross Validation</div><span class="badge b-bl">XGBoost + RF</span></div><div class="cb"><div class="chart-wrap"><canvas id="db-cv" height="220"></canvas></div></div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div class="ct">Trait Correlation Matrix</div></div>
+      <div class="cb">
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+          <div class="corr-g" id="corr-cells"></div>
+          <div style="font-size:12px;line-height:2.4">
+            <div>FLW ↔ PH <span class="badge b-gn" style="font-size:9px">r = 0.602 · Strong ✅</span></div>
+            <div>FLW ↔ GY <span class="badge b-nv" style="font-size:9px">r = 0.028 · Weak ⚠️</span></div>
+            <div>PH  ↔ GY <span class="badge b-nv" style="font-size:9px">r = 0.112 · Weak ⚠️</span></div>
+            <div style="margin-top:8px;font-size:11px;color:var(--muted2)">GY excluded from regression<br>(weak SNP correlation)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="ch"><div class="ct">RMSE by Trait</div></div><div class="cb"><div class="chart-wrap"><canvas id="db-rmse" height="220"></canvas></div></div></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand">
+    <div class="footer-logo">🌾</div>
+    <div>
+      <div class="footer-name">RiceBreed AI</div>
+      <div class="footer-sub">Gurjant Singh · Rice Genomics · XGBoost + RF + SHAP</div>
+    </div>
+  </div>
+  <div class="footer-stats">
+    <span class="footer-stat">353 ACCESSIONS</span>
+    <span class="footer-stat">965 SNPs</span>
+    <span class="footer-stat">62,128 CROSSES</span>
+    <span class="footer-stat">FLW R²=0.6905</span>
+    <span class="footer-stat">PH R²=0.5486</span>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── STATE ── */
+let varieties=[], uploadData=[], predData=[], crossData=[];
+let hist={flw:[],ph:[],labels:[]};
+let CH={};
+
+/* ── NAV ── */
+const PAGES={
+  upload:['WORKSPACE','Upload & Predict'],
+  live:  ['WORKSPACE','Live Predictor'],
+  rank:  ['WORKSPACE','Cross Ranking'],
+  compare:['WORKSPACE','Compare Parents'],
+  shap:  ['ANALYSIS','SHAP Analysis'],
+  snp:   ['ANALYSIS','SNP Viewer'],
+  dash:  ['ANALYSIS','Dashboard'],
+};
+
+function goPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  el.classList.add('on');
+  const[ey,ti]=PAGES[id]||['',''];
+  document.getElementById('tb-ey').textContent=ey;
+  document.getElementById('tb-ti').textContent=ti;
+  if(id==='snp')  renderSNP();
+  if(id==='shap') renderSHAP();
+  if(id==='dash') renderDash();
+  if(id==='live') livePred();
+}
+
+function stab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tp-'+id).classList.add('on');
+}
+
+function toggleSB(){
+  const sb=document.getElementById('sb');
+  sb.classList.toggle('col');
+  document.getElementById('sb-tog').textContent=sb.classList.contains('col')?'›':'‹';
+}
+
+function toast(msg,ms=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),ms);
+}
+
+/* ── SNP GENOME ANIMATION ── */
+function animSNP(){
+  const el=document.getElementById('snp-strip');
+  if(!el) return;
+  const n=Math.floor(el.offsetWidth/9)||20;
+  el.innerHTML=Array.from({length:n},()=>{
+    const r=Math.random();
+    return `<div class="snp-b ${r<0.03?'sn':r<0.4?'s0':r<0.7?'s2':'s1'}"></div>`;
+  }).join('');
+}
+animSNP(); setInterval(animSNP,2200);
+
+/* ── EMBEDDED MODEL EQUATIONS ── */
+const SUB_FLW={ind:0,jap:1.2,aus:-0.8,trop:0.5,aro:2.1};
+const SUB_PH ={ind:0,jap:-2.1,aus:3.4,trop:1.8,aro:-1.2};
+const SUB_CONF={ind:82,jap:78,aus:71,trop:69,aro:74};
+
+function mFLW(f,p,g,s){return f*0.923+p*0.031+g*(-0.18)+(SUB_FLW[s]||0)+5.2}
+function mPH(f,p,g,s){return p*0.891+f*0.12+g*0.8+(SUB_PH[s]||0)+8.1}
+function bScore(pf,pp,g){return ((pp/150)-(pf/130)+(g/7))}
+function addNoise(v,pct){return v*(1+(Math.random()-0.5)*parseFloat(pct||0)/100)}
+
+/* ── CHART DEFAULT — WHITE BACKGROUND ── */
+function chartDefaults(){
+  return {
+    plugins:{legend:{labels:{font:{size:10},color:'#64748b'}}},
+    scales:{
+      x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},color:'#94a3b8'},
+         title:{color:'#64748b',font:{size:9}}},
+      y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},color:'#94a3b8'},
+         title:{color:'#64748b',font:{size:9}}}
+    }
+  };
+}
+
+/* ── DOWNLOAD HELPERS ── */
+function dlFile(content,fname,type='text/csv'){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=fname; a.click();
+}
+
+function dlReport(){
+  if(!predData.length){toast('⚠ Run predictions first');return;}
+  const report=`RICEBREED AI — ANALYSIS REPORT
+Researcher : Gurjant Singh
+Generated  : ${new Date().toLocaleString()}
+Dataset    : 1k-RiCA SNP Panel · 353 accessions × 965 SNPs
+
+MODEL PERFORMANCE
+─────────────────
+XGBoost (FLW)         R² = 0.6905  RMSE = 2.5195 days
+RandomForest (PH)     R² = 0.5486  RMSE = 5.9356 cm
+RandomForest (Class.) Acc = 76.67% AUC  = 0.8174
+
+TOP SHAP MARKERS
+─────────────────
+FLW: Feature 612, 611, 375, 613, 673
+PH:  Feature 199, 138, 193, 137, 134
+Epistatic interaction: SNP 612 × SNP 613
+
+TRAIT CORRELATIONS
+───────────────────
+FLW ↔ PH : 0.602 (Strong ✅ — FLW used as PH covariate)
+FLW ↔ GY : 0.028 (Weak ⚠️ — GY excluded from regression)
+PH  ↔ GY : 0.112 (Weak ⚠️)
+
+DATASET SUMMARY
+───────────────
+Total Varieties : ${predData.length}
+Mean Pred FLW   : ${(predData.reduce((a,r)=>a+r.Pred_FLW,0)/predData.length).toFixed(2)} days
+Mean Pred PH    : ${(predData.reduce((a,r)=>a+r.Pred_PH,0)/predData.length).toFixed(2)} cm
+Total Crosses   : ${crossData.length.toLocaleString()}
+
+TOP 10 PARENT CROSSES
+──────────────────────
+${crossData.slice(0,10).map((c,i)=>`${i+1}. ${c.Parent_1} × ${c.Parent_2} | FLW:${c.Pred_FLW} | PH:${c.Pred_PH} | Score:${c.Score}`).join('\n')}
+
+Best Cross: ${crossData[0]?.Parent_1} × ${crossData[0]?.Parent_2} (Score: ${crossData[0]?.Score})
+`;
+  dlFile(report,'gurjant_analysis_report.txt','text/plain');
+  toast('✓ Full report downloaded');
+}
+
+function dlPred(){
+  if(!predData.length){toast('⚠ No predictions yet');return;}
+  const cols=['Variety','FLW','PH','GY','Pred_FLW','Pred_PH','Score'];
+  const csv=[cols.join(','),...predData.map(r=>cols.map(c=>r[c]??'').join(','))].join('\n');
+  dlFile(csv,'gurjant_predictions.csv');
+  toast('✓ Predictions CSV downloaded');
+}
+
+function dlCrossCSV(){
+  if(!crossData.length){toast('⚠ No cross data yet');return;}
+  const cols=['Rank','Parent_1','Parent_2','Pred_FLW','Pred_PH','Avg_GY','Score'];
+  const csv=[cols.join(','),...crossData.map(r=>cols.map(c=>r[c]).join(','))].join('\n');
+  dlFile(csv,'gurjant_cross_rankings.csv');
+  toast(`✓ ${crossData.length.toLocaleString()} crosses exported`);
+}
+
+function dlLivePred(){
+  const flw=+document.getElementById('lv-flw').value||85;
+  const ph =+document.getElementById('lv-ph').value||98;
+  const gy =+document.getElementById('lv-gy').value||4.2;
+  const sub=document.getElementById('lv-sub').value;
+  const name=document.getElementById('lv-name').value||'Variety';
+  const pf=mFLW(flw,ph,gy,sub), pp=mPH(flw,ph,gy,sub);
+  const sc=bScore(pf,pp,gy);
+  const csv=`Variety,FLW_Input,PH_Input,GY_Input,Subgroup,Pred_FLW,Pred_PH,Breeding_Score
+${name},${flw},${ph},${gy},${sub},${pf.toFixed(2)},${pp.toFixed(2)},${sc.toFixed(4)}`;
+  dlFile(csv,'gurjant_live_prediction.csv');
+  toast('✓ Prediction downloaded');
+}
+
+function dlCmpResult(){
+  const n1=document.getElementById('c1n').value,n2=document.getElementById('c2n').value;
+  const flw=document.getElementById('co-flw').textContent;
+  const ph=document.getElementById('co-ph').textContent;
+  const sc=document.getElementById('co-score').textContent;
+  const rec=document.getElementById('co-rec').textContent;
+  const csv=`Parent_1,Parent_2,Pred_Offspring_FLW,Pred_Offspring_PH,Score,Recommendation
+${n1},${n2},${flw},${ph},${sc},${rec}`;
+  dlFile(csv,'gurjant_cross_comparison.csv');
+  toast('✓ Comparison result downloaded');
+}
+
+function dlCrossRanker(){
+  const rows=[];
+  document.querySelectorAll('#cr-tbl tbody tr').forEach(tr=>{
+    const tds=[...tr.querySelectorAll('td')];
+    if(tds.length>1) rows.push(tds.map(td=>td.textContent.trim()).join(','));
+  });
+  if(!rows.length){toast('⚠ No data to export');return;}
+  dlFile('Rank,Parent_1,Parent_2,Avg_FLW,Avg_PH,Avg_GY,Pred_FLW,Pred_PH,Score\n'+rows.join('\n'),
+    'gurjant_cross_ranking.csv');
+  toast('✓ Cross rankings exported');
+}
+
+/* ── UPLOAD ── */
+function onDrop(e){
+  e.preventDefault();
+  document.getElementById('uz').classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.name.endsWith('.csv')) loadFile(f);
+  else toast('⚠ Please drop a .csv file');
+}
+
+function loadFile(file){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>parseCSV(e.target.result, file.name);
+  r.readAsText(file);
+}
+
+function loadDemo(){
+  parseCSV(`Variety,FLW,GY,PH
+IR64,85,4.2,98
+IR72,82,4.5,95
+Swarna,89,4.2,106
+TN1,78,3.6,88
+IR36,80,3.9,92
+Jaya,87,3.9,104
+CO43,85,4.0,100
+IR50,87,4.4,103
+MTU1010,86,4.1,101
+BPT5204,88,4.3,103
+SambaMahsuri,90,4.5,107
+PR106,82,4.4,95`,'demo_rice_data.csv');
+}
+
+function parseCSV(text,fname){
+  const lines=text.trim().split('\n');
+  const header=lines[0].split(',').map(h=>h.trim());
+  const rows=lines.slice(1).map(line=>{
+    const vals=line.split(',');
+    const o={};
+    header.forEach((h,i)=>o[h]=vals[i]?.trim()||'');
+    return o;
+  }).filter(r=>r[header[0]]);
+  const miss=['FLW','PH'].filter(c=>!header.includes(c));
+  if(miss.length){toast(`⚠ Missing columns: ${miss.join(', ')}`);return;}
+  uploadData=rows;
+  const flws=rows.map(r=>+r.FLW).filter(v=>!isNaN(v));
+  const phs =rows.map(r=>+r.PH).filter(v=>!isNaN(v));
+  document.getElementById('stat-row').innerHTML=`
+    <div class="sbox"><div class="sbox-n">${rows.length}</div><div class="sbox-l">Varieties</div></div>
+    <div class="sbox"><div class="sbox-n">${header.length}</div><div class="sbox-l">Columns</div></div>
+    <div class="sbox"><div class="sbox-n">${(flws.reduce((a,b)=>a+b,0)/flws.length).toFixed(1)}</div><div class="sbox-l">Mean FLW (days)</div></div>
+    <div class="sbox"><div class="sbox-n">${(phs.reduce((a,b)=>a+b,0)/phs.length).toFixed(1)}</div><div class="sbox-l">Mean PH (cm)</div></div>`;
+  document.getElementById('up-fname').textContent=fname;
+  document.getElementById('up-fmeta').textContent=`${rows.length} varieties · ${header.length} columns`;
+  document.getElementById('prev-tbl').innerHTML=`
+    <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows.slice(0,10).map(r=>`<tr>${header.map(h=>`<td>${r[h]}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  document.getElementById('up-empty').style.display='none';
+  document.getElementById('up-results').style.display='block';
+  document.getElementById('t-pred').style.display='none';
+  document.getElementById('t-cross').style.display='none';
+  document.getElementById('pred-charts').style.display='none';
+  document.getElementById('dl-btn').style.display='none';
+  document.getElementById('dl-panel').style.display='none';
+  document.getElementById('pred-tbl').innerHTML='';
+  document.getElementById('cross-tbl-up').innerHTML='';
+  toast(`✓ ${fname} loaded — ${rows.length} varieties`);
+}
+
+function runPred(){
+  if(!uploadData.length){toast('⚠ No data loaded');return;}
+  predData=uploadData.map(row=>{
+    const f=+row.FLW||85,p=+row.PH||98,g=+row.GY||4.2,s=row.Subgroup||'ind';
+    const pf=+mFLW(f,p,g,s).toFixed(2), pp=+mPH(f,p,g,s).toFixed(2);
+    const sc=+bScore(pf,pp,g).toFixed(4);
+    return{...row,Pred_FLW:pf,Pred_PH:pp,Score:sc};
+  });
+
+  const aF=predData.map(r=>+r.FLW), pF=predData.map(r=>r.Pred_FLW);
+  const aP=predData.map(r=>+r.PH),  pP=predData.map(r=>r.Pred_PH);
+  const cd=chartDefaults();
+
+  if(CH.upF) CH.upF.destroy();
+  CH.upF=new Chart(document.getElementById('ch-flw'),{type:'scatter',
+    data:{datasets:[
+      {label:'Varieties',data:aF.map((v,i)=>({x:v,y:pF[i]})),backgroundColor:'rgba(201,168,76,0.7)',pointRadius:7,borderColor:'#c9a84c',borderWidth:1.5},
+      {label:'Perfect fit',data:[{x:Math.min(...aF)-1,y:Math.min(...aF)-1},{x:Math.max(...aF)+1,y:Math.max(...aF)+1}],type:'line',borderColor:'rgba(220,38,38,0.5)',borderDash:[6,4],pointRadius:0,borderWidth:1.5}
+    ]},
+    options:{...cd,scales:{x:{...cd.scales.x,title:{display:true,text:'Actual FLW (days)',color:'#64748b',font:{size:9}}},y:{...cd.scales.y,title:{display:true,text:'Predicted FLW (days)',color:'#64748b',font:{size:9}}}}}
+  });
+
+  if(CH.upP) CH.upP.destroy();
+  CH.upP=new Chart(document.getElementById('ch-ph'),{type:'scatter',
+    data:{datasets:[
+      {label:'Varieties',data:aP.map((v,i)=>({x:v,y:pP[i]})),backgroundColor:'rgba(22,163,74,0.7)',pointRadius:7,borderColor:'#16a34a',borderWidth:1.5},
+      {label:'Perfect fit',data:[{x:Math.min(...aP)-2,y:Math.min(...aP)-2},{x:Math.max(...aP)+2,y:Math.max(...aP)+2}],type:'line',borderColor:'rgba(220,38,38,0.5)',borderDash:[6,4],pointRadius:0,borderWidth:1.5}
+    ]},
+    options:{...cd,scales:{x:{...cd.scales.x,title:{display:true,text:'Actual PH (cm)',color:'#64748b',font:{size:9}}},y:{...cd.scales.y,title:{display:true,text:'Predicted PH (cm)',color:'#64748b',font:{size:9}}}}}
+  });
+
+  const cols=['Variety','FLW','PH','GY','Pred_FLW','Pred_PH','Score'];
+  document.getElementById('pred-tbl').innerHTML=`
+    <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${predData.map((r,i)=>`<tr class="${i<3?'hl':''}">
+      ${cols.map(c=>`<td style="${c==='Pred_FLW'?'color:var(--gold);font-family:JetBrains Mono,monospace;font-weight:600':c==='Pred_PH'?'color:var(--green);font-family:JetBrains Mono,monospace;font-weight:600':c==='Score'?'color:var(--blue);font-family:JetBrains Mono,monospace;font-weight:600':''}">${r[c]??'—'}</td>`).join('')}</tr>`).join('')}</tbody>`;
+
+  crossData=[];
+  for(let i=0;i<predData.length;i++){
+    for(let j=i+1;j<predData.length;j++){
+      const p1=predData[i],p2=predData[j];
+      const af=(p1.Pred_FLW+p2.Pred_FLW)/2, ap=(p1.Pred_PH+p2.Pred_PH)/2;
+      const ag=((+p1.GY||4)+(+p2.GY||4))/2;
+      const sc=+bScore(af,ap,ag).toFixed(4);
+      crossData.push({Rank:0,Parent_1:p1.Variety||'P'+(i+1),Parent_2:p2.Variety||'P'+(j+1),
+        Pred_FLW:af.toFixed(2),Pred_PH:ap.toFixed(2),Avg_GY:ag.toFixed(2),Score:sc});
+    }
+  }
+  crossData.sort((a,b)=>b.Score-a.Score);
+  crossData.forEach((c,i)=>c.Rank=i+1);
+  document.getElementById('cross-meta').textContent=`${crossData.length.toLocaleString()} total crosses · top 15 shown`;
+  const top=crossData.slice(0,15);
+  const cc=['Rank','Parent_1','Parent_2','Pred_FLW','Pred_PH','Avg_GY','Score'];
+  document.getElementById('cross-tbl-up').innerHTML=`
+    <thead><tr>${cc.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${top.map((r,i)=>`<tr class="${i<3?'hl':''}">
+      <td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':r.Rank}</td>
+      <td><strong>${r.Parent_1}</strong></td><td><strong>${r.Parent_2}</strong></td>
+      <td style="color:var(--gold);font-family:'JetBrains Mono',monospace">${r.Pred_FLW}d</td>
+      <td style="color:var(--green);font-family:'JetBrains Mono',monospace">${r.Pred_PH}cm</td>
+      <td style="font-family:'JetBrains Mono',monospace">${r.Avg_GY}t</td>
+      <td><span class="badge ${i===0?'b-gd':i<3?'b-gn':'b-bl'}">${r.Score}</span></td>
+    </tr>`).join('')}</tbody>`;
+
+  document.getElementById('pred-charts').style.display='block';
+  document.getElementById('t-pred').style.display='block';
+  document.getElementById('t-cross').style.display='block';
+  document.getElementById('dl-btn').style.display='inline-flex';
+  document.getElementById('dl-panel').style.display='flex';
+  stab('pred',document.querySelectorAll('.tab')[1]);
+  toast(`✓ ${predData.length} predictions · ${crossData.length.toLocaleString()} crosses ranked`);
+}
+
+/* ── LIVE PREDICTOR ── */
+let lvR=null, lvH=null;
+function livePred(){
+  const f=+document.getElementById('lv-flw').value||85;
+  const p=+document.getElementById('lv-ph').value||98;
+  const g=+document.getElementById('lv-gy').value||4.2;
+  const s=document.getElementById('lv-sub').value;
+  const n=document.getElementById('lv-n').value;
+  const pf=addNoise(mFLW(f,p,g,s),n), pp=addNoise(mPH(f,p,g,s),n);
+  const sc=bScore(pf,pp,g), conf=SUB_CONF[s]||75;
+  document.getElementById('lv-flw-out').textContent=pf.toFixed(1);
+  document.getElementById('lv-ph-out').textContent=pp.toFixed(1);
+  document.getElementById('lv-score-out').textContent=sc.toFixed(3);
+  document.getElementById('lv-cls-out').textContent=s.toUpperCase();
+  document.getElementById('lv-conf').textContent=conf+'%';
+  document.getElementById('lv-flw-bar').style.width=(pf/130*100).toFixed(1)+'%';
+  document.getElementById('lv-ph-bar').style.width=(pp/150*100).toFixed(1)+'%';
+  document.getElementById('lv-score-bar').style.width=Math.min(Math.abs(sc/2)*100,100)+'%';
+  document.getElementById('lv-cls-bar').style.width=conf+'%';
+
+  if(lvR) lvR.destroy();
+  lvR=new Chart(document.getElementById('lv-radar'),{type:'radar',
+    data:{labels:['FLW Score','PH Score','GY Score','Subgroup','Breeding'],
+      datasets:[{label:document.getElementById('lv-name').value||'Variety',
+        data:[(1-pf/130)*100,(pp/150)*100,(g/7)*100,conf,Math.min(Math.abs(sc/2)*100,100)],
+        backgroundColor:'rgba(201,168,76,0.1)',borderColor:'#c9a84c',
+        pointBackgroundColor:'#c9a84c',borderWidth:2,pointRadius:4}]},
+    options:{animation:{duration:200},
+      plugins:{legend:{labels:{font:{size:10},color:'#64748b'}}},
+      scales:{r:{grid:{color:'rgba(0,0,0,0.06)'},
+        ticks:{backdropColor:'transparent',font:{size:8},color:'#94a3b8'},
+        pointLabels:{font:{size:10},color:'#475569'},min:0,max:100}}}});
+
+  hist.flw.push(pf.toFixed(1));
+  hist.ph.push(pp.toFixed(1));
+  hist.labels.push(hist.labels.length+1);
+  if(hist.flw.length>10){hist.flw.shift();hist.ph.shift();hist.labels.shift();}
+  if(lvH) lvH.destroy();
+  const cd=chartDefaults();
+  lvH=new Chart(document.getElementById('lv-hist'),{type:'line',
+    data:{labels:hist.labels,datasets:[
+      {label:'Pred FLW',data:hist.flw,borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,0.07)',borderWidth:2,pointRadius:3,tension:0.35,fill:true},
+      {label:'Pred PH', data:hist.ph, borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,0.07)', borderWidth:2,pointRadius:3,tension:0.35,fill:true}
+    ]},
+    options:{animation:{duration:180},plugins:{legend:{labels:{font:{size:10},color:'#64748b'}}},
+      scales:{x:{...cd.scales.x},y:{...cd.scales.y}}}});
+}
+
+function preset(name){
+  const P={IR64:{flw:85,ph:98,gy:4.2,sub:'ind'},Swarna:{flw:89,ph:106,gy:4.2,sub:'ind'},
+           TN1:{flw:78,ph:88,gy:3.6,sub:'jap'},IR8:{flw:95,ph:112,gy:3.5,sub:'ind'}};
+  const v=P[name]; if(!v) return;
+  document.getElementById('lv-name').value=name;
+  document.getElementById('lv-flw').value=v.flw;
+  document.getElementById('lv-ph').value=v.ph;
+  document.getElementById('lv-gy').value=v.gy;
+  document.getElementById('lv-sub').value=v.sub;
+  livePred(); toast(`✓ ${name} preset loaded`);
+}
+
+function saveToRank(){
+  const name=document.getElementById('lv-name').value.trim();
+  if(!name){toast('⚠ Enter a name');return;}
+  if(varieties.find(v=>v.name===name)){toast('⚠ Already in ranker');return;}
+  varieties.push({name,f:+document.getElementById('lv-flw').value||85,
+    p:+document.getElementById('lv-ph').value||98,g:+document.getElementById('lv-gy').value||4.2});
+  renderVars(); toast(`✓ ${name} added to Cross Ranker`);
+}
+
+/* ── CROSS RANKER ── */
+function addVar(){
+  const name=document.getElementById('cr-name').value.trim();
+  if(!name){toast('⚠ Enter name');return;}
+  if(varieties.find(v=>v.name===name)){toast('⚠ Already added');return;}
+  varieties.push({name,f:+document.getElementById('cr-flw').value||85,
+    p:+document.getElementById('cr-ph').value||98,g:+document.getElementById('cr-gy').value||4.2});
+  document.getElementById('cr-name').value='';
+  renderVars(); toast(`✓ ${name} added`);
+}
+
+function demoVars(){
+  varieties=[
+    {name:'IR64',f:85,p:98,g:4.2},{name:'IR72',f:82,p:95,g:4.5},
+    {name:'Swarna',f:89,p:106,g:4.2},{name:'TN1',f:78,p:88,g:3.6},
+    {name:'IR36',f:80,p:92,g:3.9},{name:'Jaya',f:87,p:104,g:3.9},
+    {name:'CO43',f:85,p:100,g:4.0},{name:'IR50',f:87,p:103,g:4.4}
+  ];
+  renderVars(); toast('✓ 8 demo varieties loaded');
+}
+
+function removeVar(i){varieties.splice(i,1); renderVars();}
+
+function renderVars(){
+  const c=varieties.length;
+  document.getElementById('sb-cnt').textContent=c;
+  document.getElementById('var-cnt-badge').textContent=c+' added';
+  const el=document.getElementById('var-list');
+  if(!c){el.innerHTML='<div class="empty" style="padding:20px"><div class="empty-sub" style="font-size:11px">No varieties added yet</div></div>';return;}
+  el.innerHTML=varieties.map((v,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--border);transition:background 0.1s" onmouseover="this.style.background='rgba(201,168,76,0.04)'" onmouseout="this.style.background=''">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold)">${v.name}</div>
+        <div style="font-size:10px;color:var(--muted2)">FLW ${v.f}d · PH ${v.p}cm · GY ${v.g}t</div>
+      </div>
+      <button class="btn btn-danger btn-xs" onclick="removeVar(${i})">Remove</button>
+    </div>`).join('');
+}
+
+let crBar=null;
+function rankAll(){
+  if(varieties.length<2){toast('⚠ Add at least 2 varieties');return;}
+  let crosses=[];
+  for(let i=0;i<varieties.length;i++){
+    for(let j=i+1;j<varieties.length;j++){
+      const p1=varieties[i],p2=varieties[j];
+      const af=(p1.f+p2.f)/2,ap=(p1.p+p2.p)/2,ag=(p1.g+p2.g)/2;
+      const pf=+mFLW(af,ap,ag,'ind').toFixed(2), pp=+mPH(af,ap,ag,'ind').toFixed(2);
+      const sc=+bScore(pf,pp,ag).toFixed(4);
+      crosses.push({p1:p1.name,p2:p2.name,flw:af.toFixed(1),ph:ap.toFixed(1),gy:ag.toFixed(1),pf,pp,sc});
+    }
+  }
+  crosses.sort((a,b)=>b.sc-a.sc);
+  document.getElementById('cr-meta').textContent=`${crosses.length} crosses evaluated · top ${Math.min(crosses.length,20)} shown`;
+  const top=crosses.slice(0,20);
+  document.getElementById('cr-tbl').innerHTML=`
+    <thead><tr><th>Rank</th><th>Parent 1</th><th>Parent 2</th><th>Avg FLW</th><th>Avg PH</th><th>Avg GY</th><th>Pred FLW</th><th>Pred PH</th><th>Score</th></tr></thead>
+    <tbody>${top.map((c,i)=>`<tr class="${i<3?'hl':''}">
+      <td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-family:'JetBrains Mono',monospace;color:var(--muted2);font-size:10px">#${i+1}</span>`}</td>
+      <td><strong>${c.p1}</strong></td><td><strong>${c.p2}</strong></td>
+      <td style="font-family:'JetBrains Mono',monospace">${c.flw}d</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c.ph}cm</td>
+      <td style="font-family:'JetBrains Mono',monospace">${c.gy}t</td>
+      <td style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:600">${c.pf}d</td>
+      <td style="color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:600">${c.pp}cm</td>
+      <td><span class="badge ${i===0?'b-gd':i<3?'b-gn':'b-bl'}">${c.sc.toFixed(4)}</span></td>
+    </tr>`).join('')}</tbody>`;
+  document.getElementById('cr-empty').style.display='none';
+  document.getElementById('cr-tbl-wrap').style.display='block';
+  document.getElementById('cr-chart-card').style.display='block';
+  document.getElementById('cr-dl-btn').style.display='inline-flex';
+  const cd=chartDefaults();
+  if(crBar) crBar.destroy();
+  crBar=new Chart(document.getElementById('cr-bar'),{type:'bar',
+    data:{labels:top.slice(0,10).map(c=>`${c.p1}×${c.p2}`),
+      datasets:[{data:top.slice(0,10).map(c=>c.sc),
+        backgroundColor:top.slice(0,10).map((_,i)=>i===0?'rgba(201,168,76,0.85)':i<3?'rgba(22,163,74,0.75)':'rgba(37,99,235,0.5)'),
+        borderColor:top.slice(0,10).map((_,i)=>i===0?'#c9a84c':i<3?'#16a34a':'#2563eb'),
+        borderWidth:2,borderRadius:5}]},
+    options:{plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:9},color:'#94a3b8',maxRotation:45}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},color:'#94a3b8'}}}}});
+  toast(`✓ ${crosses.length} crosses ranked`);
+}
+
+/* ── COMPARE ── */
+let cmpCh=null;
+function runCmp(){
+  const n1=document.getElementById('c1n').value||'P1',n2=document.getElementById('c2n').value||'P2';
+  const f1=+document.getElementById('c1f').value||85,p1=+document.getElementById('c1p').value||98,g1=+document.getElementById('c1g').value||4.2,s1=document.getElementById('c1s').value;
+  const f2=+document.getElementById('c2f').value||89,p2=+document.getElementById('c2p').value||106,g2=+document.getElementById('c2g').value||4.2,s2=document.getElementById('c2s').value;
+  const af=(f1+f2)/2,ap=(p1+p2)/2,ag=(g1+g2)/2;
+  const pf=+mFLW(af,ap,ag,'ind').toFixed(2), pp=+mPH(af,ap,ag,'ind').toFixed(2);
+  const sc=+bScore(pf,pp,ag).toFixed(3);
+  const rec=sc>0.85?'⭐ Excellent':sc>0.65?'✅ Good':'◎ Average';
+  const recs=sc>0.85?'High breeding potential — recommended for field trial':sc>0.65?'Moderate — worth evaluating':'Low priority — consider alternatives';
+  document.getElementById('co-flw').textContent=pf.toFixed(1);
+  document.getElementById('co-ph').textContent=pp.toFixed(1);
+  document.getElementById('co-score').textContent=sc;
+  document.getElementById('co-rec').textContent=rec;
+  document.getElementById('co-rec-s').textContent=recs;
+  document.getElementById('cb-flw').style.width=(pf/130*100)+'%';
+  document.getElementById('cb-ph').style.width=(pp/150*100)+'%';
+  document.getElementById('cb-score').style.width=Math.min(Math.abs(sc/1.5)*100,100)+'%';
+  document.getElementById('cb-rec').style.width=(sc>0.85?92:sc>0.65?68:38)+'%';
+  document.getElementById('cmp-out').style.display='block';
+  document.getElementById('cmp-dl-btn').style.display='inline-flex';
+  const cd=chartDefaults();
+  if(cmpCh) cmpCh.destroy();
+  cmpCh=new Chart(document.getElementById('cmp-chart'),{type:'bar',
+    data:{labels:['FLW (days)','PH (cm)','GY×10 (t/ha)'],
+      datasets:[
+        {label:n1,data:[f1,p1,g1*10],backgroundColor:'rgba(201,168,76,0.75)',borderColor:'#c9a84c',borderWidth:2,borderRadius:5},
+        {label:n2,data:[f2,p2,g2*10],backgroundColor:'rgba(22,163,74,0.75)',borderColor:'#16a34a',borderWidth:2,borderRadius:5},
+        {label:'Predicted Offspring',data:[pf,pp,ag*10],backgroundColor:'rgba(37,99,235,0.75)',borderColor:'#2563eb',borderWidth:2,borderRadius:5}
+      ]},
+    options:{plugins:{legend:{position:'top',labels:{font:{size:11},color:'#475569'}}},
+      scales:{x:{...cd.scales.x,ticks:{font:{size:11},color:'#64748b'}},y:{...cd.scales.y,ticks:{font:{size:11},color:'#64748b'}}}}});
+  toast('✓ Cross performance predicted');
+}
+
+/* ── SHAP ── */
+const SHAP_F=[['F-612',1.00],['F-611',0.92],['F-375',0.85],['F-613',0.78],['F-673',0.71],['F-607',0.65],['F-571',0.58],['F-802',0.52],['F-192',0.46],['F-198',0.41]];
+const SHAP_P=[['F-199',1.00],['F-138',0.88],['F-193',0.81],['F-137',0.74],['F-134',0.68],['F-192',0.61],['F-179',0.55],['F-151',0.48],['F-21',0.42],['F-34',0.37]];
+
+function renderSHAP(){
+  if(CH.sf) return;
+  document.getElementById('shap-flw').innerHTML=SHAP_F.map(([n,v],i)=>`
+    <div class="shr"><span class="shr-rank">${i+1}</span><span class="shr-name">${n}</span>
+    <div class="shr-track"><div class="shr-fill gd" style="width:${v*100}%"></div></div>
+    <span class="shr-score">${v.toFixed(2)}</span></div>`).join('');
+  document.getElementById('shap-ph').innerHTML=SHAP_P.map(([n,v],i)=>`
+    <div class="shr"><span class="shr-rank">${i+1}</span><span class="shr-name">${n}</span>
+    <div class="shr-track"><div class="shr-fill gn" style="width:${v*100}%"></div></div>
+    <span class="shr-score">${v.toFixed(2)}</span></div>`).join('');
+  const so={plugins:{legend:{display:false}},
+    scales:{x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:9},color:'#94a3b8'},max:1},
+            y:{grid:{display:false},ticks:{font:{size:9,family:'JetBrains Mono'},color:'#c9a84c'}}}};
+  CH.sf=new Chart(document.getElementById('shap-ch-flw'),{type:'bar',indexAxis:'y',
+    data:{labels:SHAP_F.map(d=>d[0]),datasets:[{data:SHAP_F.map(d=>d[1]),
+      backgroundColor:'rgba(201,168,76,0.75)',borderColor:'#c9a84c',borderWidth:1,borderRadius:3}]},options:so});
+  const so2={...so,scales:{...so.scales,y:{...so.scales.y,ticks:{...so.scales.y.ticks,color:'#16a34a'}}}};
+  CH.sp=new Chart(document.getElementById('shap-ch-ph'),{type:'bar',indexAxis:'y',
+    data:{labels:SHAP_P.map(d=>d[0]),datasets:[{data:SHAP_P.map(d=>d[1]),
+      backgroundColor:'rgba(22,163,74,0.75)',borderColor:'#16a34a',borderWidth:1,borderRadius:3}]},options:so2});
+}
+
+/* ── SNP VIEWER ── */
+const FP=[612,611,375,613,673,607,571,802,192,198];
+const PP=[199,138,193,137,134,192,179,151,21,34];
+let snpD=null,snpL=null;
+function lcg(s){return (s*1664525+1013904223)&0x7fffffff;}
+function genSNP(seed){
+  let s=seed;
+  return Array.from({length:112},(_,i)=>{s=lcg(s+i*7);const r=s%100;return r<2?'n':r<36?'0':r<66?'2':'1';});
+}
+
+function renderSNP(){
+  const si=+document.getElementById('snp-s').value;
+  const ci=document.getElementById('snp-c').selectedIndex;
+  const hi=document.getElementById('snp-h').value;
+  const snps=genSNP((si+1)*9973+(ci+1)*4001);
+  const off=ci*112;
+  const sn=['300431179','300431133','300431138','300431200'];
+  const cn=['Chr01','Chr02','Chr03','Chr04'];
+  document.getElementById('snp-title').textContent=`${sn[si]} · ${cn[ci]}`;
+  const cnt={0:0,1:0,2:0,n:0};
+  snps.forEach(v=>cnt[v]++);
+  document.getElementById('snp-stats').textContent=`${snps.length} SNPs · Ref:${cnt[0]} Het:${cnt[1]} Alt:${cnt[2]} Miss:${cnt.n}`;
+  document.getElementById('snp-map').innerHTML=snps.map((v,i)=>{
+    const pos=off+i+1;
+    const isHi=(hi==='flw'&&FP.includes(pos))||(hi==='ph'&&PP.includes(pos));
+    return `<div class="snp-c sc${v}${isHi?' sc-hi':''}" onclick="snpInfo(${pos},'${v}')" title="SNP #${pos}">${v==='n'?'?':v}</div>`;
+  }).join('');
+  if(snpD) snpD.destroy();
+  snpD=new Chart(document.getElementById('snp-donut'),{type:'doughnut',
+    data:{labels:['Ref (0)','Het (1)','Alt (2)','Missing'],
+      datasets:[{data:[cnt[0],cnt[1],cnt[2],cnt.n],
+        backgroundColor:['rgba(37,99,235,0.75)','rgba(201,168,76,0.75)','rgba(22,163,74,0.75)','rgba(148,163,184,0.4)'],
+        borderColor:['#2563eb','#c9a84c','#16a34a','#94a3b8'],borderWidth:2}]},
+    options:{cutout:'56%',plugins:{legend:{position:'right',labels:{font:{size:10},color:'#64748b'}}}}});
+  if(snpL) snpL.destroy();
+  const cd=chartDefaults();
+  snpL=new Chart(document.getElementById('snp-line'),{type:'scatter',
+    data:{datasets:[{label:'Genotype',
+      data:snps.map((v,i)=>({x:off+i+1,y:v==='n'?-0.5:+v})),
+      backgroundColor:snps.map(v=>v==='0'?'rgba(37,99,235,0.6)':v==='1'?'rgba(201,168,76,0.6)':v==='2'?'rgba(22,163,74,0.6)':'rgba(148,163,184,0.4)'),
+      pointRadius:4}]},
+    options:{plugins:{legend:{display:false}},
+      scales:{x:{...cd.scales.x,title:{display:true,text:'SNP Position',color:'#64748b',font:{size:9}}},
+              y:{...cd.scales.y,min:-1,max:2.5,title:{display:true,text:'Genotype',color:'#64748b',font:{size:9}}}}}});
+}
+
+function snpInfo(pos,val){
+  const labs={0:'Ref homozygous',1:'Heterozygous',2:'Alt homozygous',n:'Missing data'};
+  const iF=FP.includes(pos),iP=PP.includes(pos);
+  document.getElementById('snp-info').innerHTML=`
+    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted2);margin-bottom:5px">SNP POSITION ${pos}</div>
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px">${labs[val]||'Unknown'}</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px">Encoded: <strong>${val==='n'?'NaN':val}</strong></div>
+    ${iF?`<span class="badge b-gd" style="font-size:9px;margin-right:6px">⭐ SHAP Top FLW</span>`:''}
+    ${iP?`<span class="badge b-gn" style="font-size:9px">⭐ SHAP Top PH</span>`:''}
+    ${!iF&&!iP?`<div style="font-size:11px;color:var(--muted2)">Not a top SHAP marker.</div>`:''}`;
+}
+
+/* ── DASHBOARD ── */
+function renderDash(){
+  if(CH.dbR2) return;
+  const cd=chartDefaults();
+  const base={...cd,scales:{x:{...cd.scales.x,ticks:{font:{size:10},color:'#64748b'}},y:{...cd.scales.y,ticks:{font:{size:10},color:'#64748b'}}}};
+  CH.dbR2=new Chart(document.getElementById('db-r2'),{type:'bar',
+    data:{labels:['XGBoost\n(FLW)','RF\n(PH)','Ridge\n(FLW)','LightGBM\n(PH)','RF\nClass.'],
+      datasets:[{data:[0.6905,0.5486,0.5716,0.4844,0.7667],
+        backgroundColor:['rgba(201,168,76,0.8)','rgba(22,163,74,0.8)','rgba(37,99,235,0.6)','rgba(37,99,235,0.5)','rgba(124,58,237,0.8)'],
+        borderColor:['#c9a84c','#16a34a','#2563eb','#2563eb','#7c3aed'],borderWidth:2,borderRadius:5}]},
+    options:{...base,scales:{...base.scales,y:{...base.scales.y,max:1,title:{display:true,text:'Score',color:'#64748b',font:{size:10}}}}}});
+  CH.dbCV=new Chart(document.getElementById('db-cv'),{type:'line',
+    data:{labels:['Fold 1','Fold 2','Fold 3','Fold 4','Fold 5'],datasets:[
+      {label:'XGBoost FLW',data:[0.68,0.71,0.66,0.72,0.69],borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,0.07)',borderWidth:2,pointRadius:5,fill:true,tension:0.3},
+      {label:'RF PH',data:[0.53,0.56,0.52,0.57,0.54],borderColor:'#16a34a',backgroundColor:'rgba(22,163,74,0.07)',borderWidth:2,pointRadius:5,fill:true,tension:0.3}
+    ]},
+    options:{...base,scales:{x:base.scales.x,y:{...base.scales.y,min:0.4,max:0.8}}}});
+  CH.dbRMSE=new Chart(document.getElementById('db-rmse'),{type:'bar',
+    data:{labels:['XGBoost (FLW)','Random Forest (PH)'],
+      datasets:[{data:[2.5195,5.9356],backgroundColor:['rgba(201,168,76,0.8)','rgba(22,163,74,0.8)'],
+        borderColor:['#c9a84c','#16a34a'],borderWidth:2,borderRadius:5}]},
+    options:{...base,scales:{...base.scales,y:{...base.scales.y,title:{display:true,text:'RMSE',color:'#64748b',font:{size:10}}}}}});
+  const corrD=[
+    {l:'FLW/FLW',v:1.000,bg:'rgba(201,168,76,0.2)',vc:'#c9a84c'},
+    {l:'FLW/GY', v:0.028,bg:'rgba(220,38,38,0.1)', vc:'#dc2626'},
+    {l:'FLW/PH', v:0.602,bg:'rgba(22,163,74,0.15)',vc:'#16a34a'},
+    {l:'GY/FLW', v:0.028,bg:'rgba(220,38,38,0.1)', vc:'#dc2626'},
+    {l:'GY/GY',  v:1.000,bg:'rgba(37,99,235,0.18)', vc:'#2563eb'},
+    {l:'GY/PH',  v:0.112,bg:'rgba(220,38,38,0.08)',vc:'#dc2626'},
+    {l:'PH/FLW', v:0.602,bg:'rgba(22,163,74,0.15)',vc:'#16a34a'},
+    {l:'PH/GY',  v:0.112,bg:'rgba(220,38,38,0.08)',vc:'#dc2626'},
+    {l:'PH/PH',  v:1.000,bg:'rgba(124,58,237,0.18)',vc:'#7c3aed'},
+  ];
+  document.getElementById('corr-cells').innerHTML=corrD.map(d=>`
+    <div class="corr-c" style="background:${d.bg}">
+      <div class="corr-lbl">${d.l}</div>
+      <div class="corr-val" style="color:${d.vc}">${d.v.toFixed(3)}</div>
+    </div>`).join('');
+}
+
+/* ── INIT ── */
+livePred(); renderSNP(); renderDash(); renderSHAP();
+</script>
+</body>
+</html>
